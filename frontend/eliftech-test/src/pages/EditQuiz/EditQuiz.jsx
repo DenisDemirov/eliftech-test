@@ -1,11 +1,40 @@
-import styles from './CreateQuiz.module.css';
-import { useState } from 'react';
+import styles from './EditQuiz.module.css';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { quizModel } from '../../models/quizModel.js';
 import { questionModel } from '../../models/questionModel.js';
 
-function CreateQuiz() {
+function EditQuiz() {
+    const { quizId } = useParams();
+    const navigate = useNavigate();
+    
     const [quiz, setQuiz] = useState({ ...quizModel });
     const [questions, setQuestions] = useState([]);
+    
+    useEffect(() => {
+        const fetchQuizData = async () => {
+            try {
+                const quizResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}${import.meta.env.VITE_API_GET_QUIZ_URL}${quizId}`);
+                if (!quizResponse.ok) {
+                    throw new Error('Failed to fetch quiz data');
+                }
+                const quizData = await quizResponse.json();
+                setQuiz(quizData);
+                
+                const questionsResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}${import.meta.env.VITE_GET_CHOICES_BY_QUIZ_ID_URL}${quizId}`);
+                if (!questionsResponse.ok) {
+                    throw new Error('Failed to fetch questions data');
+                }
+                const questionsData = await questionsResponse.json();
+                setQuestions(questionsData);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error loading quiz data');
+            }
+        };
+
+        fetchQuizData();
+    }, [quizId]);
 
     const addQuestion = () => {
         setQuestions([...questions, { 
@@ -54,58 +83,54 @@ function CreateQuiz() {
 
     const handleSubmit = async () => {
         try {
-            // Remove _id from quiz before sending
-            const { _id, ...quizWithoutId } = quiz;
-
-            // Remove _id from each question before sending
-            // eslint-disable-next-line no-unused-vars
-            const questionsWithoutId = questions.map(({ _id, ...rest }) => rest);
-            quizWithoutId.question_count = questionsWithoutId.length;
-            // Creating Quiz
+            const quizWithoutId = { ...quiz, question_count: questions.length };
+            
+            // Update Quiz
             const quizResponse = await fetch(
-                `${import.meta.env.VITE_API_BASE_URL}${import.meta.env.VITE_API_CREATE_QUIZ_URL}`, {
-                method: 'POST',
+                `${import.meta.env.VITE_API_BASE_URL}${import.meta.env.VITE_API_UPDATE_QUIZ_URL}${quizId}`, {
+                method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(quizWithoutId),
             });
 
             if (!quizResponse.ok) {
-                throw new Error('Failed to create quiz');
+                throw new Error('Failed to update quiz');
             }
 
-            // Getting created quiz
-            const createdQuiz = await quizResponse.json(); 
-            console.log('Quiz created:', createdQuiz);
+            // Getting updated quiz
+            const updatedQuiz = await quizResponse.json();
+            console.log('Quiz updated:', updatedQuiz);
 
             // Adding Quiz Id to questions
-            const questionsWithQuizId = questionsWithoutId.map((q, index) => ({
+            const questionsWithQuizId = questions.map((q, index) => ({
                 ...q,
-                quiz_id: createdQuiz._id,
+                quiz_id: updatedQuiz._id,
                 position: index + 1,
             }));
-
-            // Fetch questions
+            console.log(questionsWithQuizId);
+            // Update questions
             const questionsResponse = await fetch(
-                `${import.meta.env.VITE_API_BASE_URL}${import.meta.env.VITE_API_CREATE_QUESTION_URL}`, {
-                method: 'POST',
+                `${import.meta.env.VITE_API_BASE_URL}${import.meta.env.VITE_API_UPDATE_QUESTIONS_URL}`, {
+                method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ questions: questionsWithQuizId }),
             });
 
             if (!questionsResponse.ok) {
-                throw new Error('Failed to create questions');
+                throw new Error('Failed to update questions');
             }
 
-            alert('Quiz and questions created successfully!');
+            alert('Quiz and questions updated successfully!');
+            navigate(`/`);
         } catch (error) {
             console.error('Error:', error);
-            alert('Error creating quiz and questions');
+            alert('Error updating quiz and questions');
         }
     };
 
     return (
         <div className={styles.container}>
-            <h1>Create Quiz</h1>
+            <h1>Edit Quiz</h1>
 
             <div className={styles.quiz_details}>
                 <input type="text" placeholder="Title" value={quiz.title}
@@ -159,12 +184,10 @@ function CreateQuiz() {
             </ol>
 
             <button onClick={addQuestion} className={styles.addQuestion}>Add question</button>
-            <button onClick={handleSubmit} className={styles.createQuiz}>Create Quiz</button>
+            <button onClick={handleSubmit} className={styles.createQuiz}>Update Quiz</button>
         </div>
     );
 }
 
-export default CreateQuiz;
-
-
+export default EditQuiz;
 

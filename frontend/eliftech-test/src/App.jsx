@@ -9,6 +9,8 @@ import {
 import styles from './App.module.css';
 import CreateQuiz from './pages/CreateQuiz/CreateQuiz';
 import Home from './pages/Home/Home';
+import QuizForm from './pages/QuizForm/QuizForm';
+import EditQuiz from './pages/EditQuiz/EditQuiz';
 
 function App() {
   return (
@@ -29,6 +31,8 @@ function App() {
         <div className={styles.content}>
           <Routes>
           <Route path="/" element={<Home />} />
+          <Route path='/quiz/:id' element={<QuizForm />} />
+          <Route path='/edit-quiz/:quizId' element={<EditQuiz/>} />
           <Route path="/create-quiz" element={<CreateQuiz />} />
         </Routes>
         </div>

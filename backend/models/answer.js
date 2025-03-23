@@ -17,7 +17,7 @@ const answerSchema = new mongoose.Schema({
     ref: 'Quiz',
     required: true
   }
-}, { timestamps: true });
+}, { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } });
 
 const Answer = mongoose.model('Answer', answerSchema);
 

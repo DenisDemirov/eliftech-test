@@ -35,6 +35,24 @@ class ChoiceController {
     }
   }
 
+  // Create multiple choices
+  static async createChoices(req, res) {
+    try {
+      const choicesData = req.body.questions.map(choice => ({
+        position: choice.position,
+        question_text: choice.question_text,
+        is_single_answer: choice.is_single_answer,
+        options: choice.options,
+        quiz_id: choice.quiz_id
+      }));
+
+      const choices = await ChoiceService.createChoices(choicesData);
+      res.status(201).json(choices);
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
+  }
+
   // Update a choice
   static async updateChoice(req, res) {
     try {
@@ -43,6 +61,25 @@ class ChoiceController {
         return res.status(404).json({ error: 'Choice not found' });
       }
       res.status(200).json(choice);
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
+  }
+
+  // Update multiple choices
+  static async updateChoices(req, res) {
+    try {
+      const choicesData = req.body.questions.map(choice => ({
+        id: choice._id || null,
+        position: choice.position,
+        question_text: choice.question_text,
+        is_single_answer: choice.is_single_answer,
+        options: choice.options,
+        quiz_id: choice.quiz_id
+      }));
+
+      const updatedChoices = await ChoiceService.updateChoices(choicesData);
+      res.status(200).json(updatedChoices);
     } catch (err) {
       res.status(400).json({ error: err.message });
     }
@@ -62,4 +99,4 @@ class ChoiceController {
   }
 }
 
-export const { getAllChoices, getChoiceById, createChoice, updateChoice, deleteChoice } = ChoiceController;
+export const { getAllChoices, getChoiceById, createChoice, createChoices, updateChoice, updateChoices, deleteChoice } = ChoiceController;

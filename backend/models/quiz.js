@@ -12,6 +12,10 @@ const quizSchema = new mongoose.Schema({
   question_count: {
     type: Number,
     required: true
+  },
+  completions:{
+    type: Number,
+    default: 0
   }
 }, { timestamps: true });
 

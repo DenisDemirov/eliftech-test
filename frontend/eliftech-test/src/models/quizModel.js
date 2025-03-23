@@ -3,4 +3,5 @@ export const quizModel = {
     title: '',
     description: '',
     question_count: 0,
+    completions: 0
 };
