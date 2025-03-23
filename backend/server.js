@@ -13,7 +13,7 @@ app.use('/api', router);
 connectToDatabase();
 
 const PORT = process.env.PORT || 3000;
-
+app.use(cors({ origin: `${process.env.ORIGIN}` }));
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
