@@ -1,8 +1,14 @@
 import Quiz from '../models/quiz.js';
 
 class QuizService {
-  static async getAllQuizzes() {
-    return await Quiz.find();
+  
+  static async getAllQuizzes(page, limit) {
+    const skip = (page - 1) * limit;
+
+    const quizzes = await Quiz.find().skip(skip).limit(limit);
+    const total = await Quiz.countDocuments();
+
+    return { quizzes, total };
   }
 
   static async getQuizById(id) {

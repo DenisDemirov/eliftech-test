@@ -5,8 +5,21 @@ class QuizController {
   // Get all quizzes
   static async getAllQuizzes(req, res) {
     try {
-      const quizzes = await QuizService.getAllQuizzes();
-      res.status(200).json(quizzes);
+      let { page = 1, limit = 10 } = req.query;
+      page = parseInt(page, 10);
+      limit = parseInt(limit, 10);
+
+      if (isNaN(page) || page < 1) page = 1;
+      if (isNaN(limit) || limit < 1) limit = 10;
+
+      const { quizzes, total } = await QuizService.getAllQuizzes(page, limit);
+
+      res.status(200).json({
+        quizzes,
+        total,
+        page,
+        totalPages: Math.ceil(total / limit),
+      });
     } catch (err) {
       res.status(400).json({ error: err.message });
     }

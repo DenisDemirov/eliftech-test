@@ -21,12 +21,18 @@ function App() {
             <li>
               <Link to="/">Quiz App</Link>
             </li>
+            <li className={styles.navList__create_quiz}>
+              <Link to="/create-quiz">Create Quiz</Link>
+            </li>
           </ul>
         </nav>
-        <Routes>
+        <div className={styles.content}>
+          <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/create-quiz" element={<CreateQuiz />} />
         </Routes>
+        </div>
+        
 
       </div>
     </Router>
