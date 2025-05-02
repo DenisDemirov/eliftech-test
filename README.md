@@ -1,5 +1,5 @@
-# eliftech-test
-level - base
+Quiz web application
+
 front end hosting - https://eliftech-testfront.onrender.com/
 back end hosting - https://eliftech-test-y38c.onrender.com
 For data storge was used MongoDB on Atlas free host
